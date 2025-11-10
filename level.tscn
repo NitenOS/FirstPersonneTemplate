@@ -1,0 +1,49 @@
+[gd_scene load_steps=8 format=3 uid="uid://bopp7dfmorl7m"]
+
+[ext_resource type="PackedScene" uid="uid://c7gynwqu2m76k" path="res://Node/src_player.tscn" id="1_u52ul"]
+[ext_resource type="Texture2D" uid="uid://c46p4bp1688k4" path="res://Placeholder/Skybox/hdris/kloofendal_48d_partly_cloudy_puresky_2k.hdr" id="2_vonw3"]
+[ext_resource type="Texture2D" uid="uid://bx5luk3qpxpi8" path="res://Placeholder/Grid/512x512/Gray/Prototype_Grid_Gray_08-512x512.png" id="3_oi3di"]
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_oi3di"]
+panorama = ExtResource("2_vonw3")
+
+[sub_resource type="Sky" id="Sky_0b4ue"]
+sky_material = SubResource("PanoramaSkyMaterial_oi3di")
+
+[sub_resource type="Environment" id="Environment_f2txt"]
+background_mode = 2
+sky = SubResource("Sky_0b4ue")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0b4ue"]
+albedo_texture = ExtResource("3_oi3di")
+uv1_triplanar = true
+
+[node name="Node3D" type="Node3D"]
+
+[node name="CharacterBody3D" parent="." instance=ExtResource("1_u52ul")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="Env" type="Node3D" parent="."]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Env"]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Env"]
+environment = SubResource("Environment_f2txt")
+
+[node name="Stage" type="Node3D" parent="."]
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Stage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.4995, 0)
+use_collision = true
+size = Vector3(20, 1, 20)
+material = SubResource("StandardMaterial3D_0b4ue")
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="Stage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.251, 2, -13.652)
+use_collision = true
+size = Vector3(20, 1, 20)
+material = SubResource("StandardMaterial3D_0b4ue")
