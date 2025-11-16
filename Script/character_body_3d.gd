@@ -2,17 +2,18 @@ extends CharacterBody3D
 
 @onready var head : Node3D = $head
 @onready var neck : Node3D = $head/neck
-@onready var camera : Camera3D = $head/neck/Camera3D
+@onready var eyes: Node3D = $head/neck/eyes
+@onready var camera : Camera3D = $head/neck/eyes/Camera3D
 
 @onready var csStandup : CollisionShape3D = $CS_Standup
 @onready var csCrouch : CollisionShape3D = $CS_Crouch
 @onready var rcUpCrouch: RayCast3D = $RC_UpCrouch
 
 
-@export var standupCamera = 1.7
-@export var crouchCamera = 1.2
+@export var standupCamera : float = 1.7
+@export var crouchCamera : float = 1.2
 
-const JUMP_VELOCITY : float = 2.5
+const JUMP_VELOCITY : float = 4.5
 const MOUSE_SENS : float = 0.2
 
 # Speed var
@@ -21,10 +22,40 @@ const NORMAL_SPEED : float = 5.0
 const CROUCH_SPEED : float = 3.0
 const SPRINT_SPEED : float = 8.0
 
-var lerpSpeed = 10.0
+# Input var
+var lerpSpeed : float = 10.0
+var airLerpSpeed : float = 3.0
 var direction := Vector3.ZERO
 
+# Slide var
+@onready var timerSlide: Timer = $Timer_Slide
+var slideVector := Vector2.ZERO
+const SLIDE_SPEED : float = 10.0
+
+# Head bobbing var
+const HEAD_BOBBING_SPRINTING_SPEED : float = 22.0
+const HEAD_BOBBING_WALKING_SPEED : float = 14.0
+const HEAD_BOBBING_CROUCHING_SPEED : float = 10.0
+
+const HEAD_BOBBING_SPRINTING_INTENSITY : float = 0.2
+const HEAD_BOBBING_WALKING_INTENSITY : float = 0.1
+const HEAD_BOBBING_CROUCHING_INTENSITY : float = 0.05
+
+var headBobbingVector = Vector2.ZERO
+var headBobbingIndex : float = 0.0
+var headBobbingCurrentIntensity : float = 0.0
+
+# State 
+var isWalking : bool = false
+var isCrouching : bool = false
+var isSprinting : bool = false
+var isSliding : bool = false
+
+
 func _physics_process(delta: float) -> void:
+	# Getting Input Movement
+	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
+	
 	# Add the gravity.
 	if not is_on_floor():
 		velocity += get_gravity() * delta
@@ -32,28 +63,91 @@ func _physics_process(delta: float) -> void:
 	# Handle jump.
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
+		isSliding = false
 
-	if Input.is_action_pressed("sprint") and !rcUpCrouch.is_colliding():
-		currentSpeed = SPRINT_SPEED
-		head.position.y = lerp(head.position.y, standupCamera, delta*lerpSpeed)
-		csStandup.disabled = false
-		csCrouch.disabled = true
-	elif Input.is_action_pressed("crouch"):
-		currentSpeed = CROUCH_SPEED
+
+		
+	if Input.is_action_pressed("crouch"):
+		currentSpeed = lerp(currentSpeed, CROUCH_SPEED, delta * lerpSpeed)
 		head.position.y = lerp(head.position.y, crouchCamera, delta*lerpSpeed)
 		csStandup.disabled = true
 		csCrouch.disabled = false
+		
+		# Slide begin logic
+		
+		if isSprinting and input_dir != Vector2.ZERO:
+			isSliding = true
+			timerSlide.start()
+			slideVector = input_dir
+			print("Slide begin")
+			pass
+		
+		isWalking = false
+		isSprinting = false
+		isCrouching = true
+
+	elif Input.is_action_pressed("sprint") and !rcUpCrouch.is_colliding():
+		currentSpeed = lerp(currentSpeed, SPRINT_SPEED, delta * lerpSpeed)
+		head.position.y = lerp(head.position.y, standupCamera, delta*lerpSpeed)
+		csStandup.disabled = false
+		csCrouch.disabled = true
+		
+		isWalking = false
+		isSprinting = true
+		isCrouching = false
+		
 	elif !Input.is_action_pressed("sprint") and !Input.is_action_pressed("crouch") and !rcUpCrouch.is_colliding():
 		head.position.y = lerp(head.position.y, standupCamera, delta*lerpSpeed)
 		csStandup.disabled = false
 		csCrouch.disabled = true
 
-		currentSpeed = NORMAL_SPEED
-
-	# Get the input direction and handle the movement/deceleration.
-	# As good practice, you should replace UI actions with custom gameplay actions.
-	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
-	direction = lerp(direction,(transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized(), delta * lerpSpeed)
+		currentSpeed = lerp(currentSpeed, NORMAL_SPEED, delta * lerpSpeed)
+		
+		isWalking = true
+		isSprinting = false
+		isCrouching = false
+		
+		
+	# Slide logic end
+	if isSliding and timerSlide.is_stopped():
+		isSliding = false
+		print("slide end")
+		pass
+		
+	# Headbob logic
+	if isSprinting:
+		headBobbingCurrentIntensity = HEAD_BOBBING_SPRINTING_INTENSITY
+		headBobbingIndex += HEAD_BOBBING_SPRINTING_SPEED * delta
+	elif isWalking:
+		headBobbingCurrentIntensity = HEAD_BOBBING_WALKING_INTENSITY
+		headBobbingIndex += HEAD_BOBBING_WALKING_SPEED * delta
+	elif isCrouching:
+		headBobbingCurrentIntensity = HEAD_BOBBING_CROUCHING_INTENSITY
+		headBobbingIndex += HEAD_BOBBING_CROUCHING_SPEED * delta
+		
+	if is_on_floor() and !isSliding and input_dir != Vector2.ZERO:
+		headBobbingVector.y = sin(headBobbingIndex)
+		headBobbingVector.x = sin(headBobbingIndex/2) + 0.5
+		
+		eyes.position.y = lerp(eyes.position.y, headBobbingVector.y * (headBobbingCurrentIntensity/2.0), delta*lerpSpeed)
+		eyes.position.x = lerp(eyes.position.x, headBobbingVector.x * headBobbingCurrentIntensity, delta*lerpSpeed)
+		
+	else:
+		eyes.position.y = lerp(eyes.position.y, 0.0, delta*lerpSpeed)
+		eyes.position.x = lerp(eyes.position.x, 0.0, delta*lerpSpeed)
+		
+	
+	# Direction logic
+	if is_on_floor():
+		direction = lerp(direction,(transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized(), delta * lerpSpeed)
+	else:
+		if input_dir != Vector2.ZERO:
+			direction = lerp(direction,(transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized(), delta * airLerpSpeed)
+	
+	if isSliding: 
+		direction = (transform.basis * Vector3(slideVector.x, 0, slideVector.y)).normalized()
+		currentSpeed = (timerSlide.time_left + 0.1) * SLIDE_SPEED
+	
 	if direction:
 		velocity.x = direction.x * currentSpeed
 		velocity.z = direction.z * currentSpeed
