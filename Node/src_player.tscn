@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://c7gynwqu2m76k"]
+[gd_scene load_steps=8 format=3 uid="uid://c7gynwqu2m76k"]
 
 [ext_resource type="Script" uid="uid://ds2rd6386oum4" path="res://Script/character_body_3d.gd" id="1_q6ses"]
 
@@ -7,6 +7,96 @@ height = 1.8
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_v3drd"]
 height = 1.3
+
+[sub_resource type="Animation" id="Animation_v3drd"]
+resource_name = "jump"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Camera3D:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, -0.05, 0), Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Camera3D:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0, -0.008726646), Vector3(0, 0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_waoww"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Camera3D:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Camera3D:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_pdrn0"]
+resource_name = "landing"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Camera3D:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, -0.1, 0), Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Camera3D:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0, 0.008726646), Vector3(0, 0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_pdrn0"]
+_data = {
+&"RESET": SubResource("Animation_waoww"),
+&"jump": SubResource("Animation_v3drd"),
+&"landing": SubResource("Animation_pdrn0")
+}
 
 [node name="CharacterBody3D" type="CharacterBody3D"]
 script = ExtResource("1_q6ses")
@@ -28,6 +118,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
 [node name="eyes" type="Node3D" parent="head/neck"]
 
 [node name="Camera3D" type="Camera3D" parent="head/neck/eyes"]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="head/neck/eyes"]
+libraries = {
+&"": SubResource("AnimationLibrary_pdrn0")
+}
 
 [node name="RC_UpCrouch" type="RayCast3D" parent="."]
 target_position = Vector3(0, 2, 0)

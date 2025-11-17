@@ -8,24 +8,24 @@ extends CharacterBody3D
 @onready var csStandup : CollisionShape3D = $CS_Standup
 @onready var csCrouch : CollisionShape3D = $CS_Crouch
 @onready var rcUpCrouch: RayCast3D = $RC_UpCrouch
+@onready var animationPlayer: AnimationPlayer = $head/neck/eyes/AnimationPlayer
 
 
 @export var standupCamera : float = 1.7
 @export var crouchCamera : float = 1.2
-
-const JUMP_VELOCITY : float = 4.5
-const MOUSE_SENS : float = 0.2
 
 # Speed var
 var currentSpeed : float = 5.0
 const NORMAL_SPEED : float = 5.0
 const CROUCH_SPEED : float = 3.0
 const SPRINT_SPEED : float = 8.0
+const JUMP_VELOCITY : float = 4.5
 
 # Input var
 var lerpSpeed : float = 10.0
 var airLerpSpeed : float = 3.0
 var direction := Vector3.ZERO
+const MOUSE_SENS : float = 0.2
 
 # Slide var
 @onready var timerSlide: Timer = $Timer_Slide
@@ -51,8 +51,8 @@ var isCrouching : bool = false
 var isSprinting : bool = false
 var isSliding : bool = false
 
-
 func _physics_process(delta: float) -> void:
+	
 	# Getting Input Movement
 	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
 	
@@ -62,11 +62,16 @@ func _physics_process(delta: float) -> void:
 
 	# Handle jump.
 	if Input.is_action_just_pressed("jump") and is_on_floor():
+		animationPlayer.play("jump")
 		velocity.y = JUMP_VELOCITY
 		isSliding = false
-
-
 		
+	if velocity.y < -4:
+		print(velocity.y)
+		animationPlayer.play("landing")
+		
+		# States logic
+	# Crouch logic
 	if Input.is_action_pressed("crouch"):
 		currentSpeed = lerp(currentSpeed, CROUCH_SPEED, delta * lerpSpeed)
 		head.position.y = lerp(head.position.y, crouchCamera, delta*lerpSpeed)
@@ -74,7 +79,6 @@ func _physics_process(delta: float) -> void:
 		csCrouch.disabled = false
 		
 		# Slide begin logic
-		
 		if isSprinting and input_dir != Vector2.ZERO:
 			isSliding = true
 			timerSlide.start()
@@ -85,7 +89,8 @@ func _physics_process(delta: float) -> void:
 		isWalking = false
 		isSprinting = false
 		isCrouching = true
-
+	
+	# Sprint logic begin
 	elif Input.is_action_pressed("sprint") and !rcUpCrouch.is_colliding():
 		currentSpeed = lerp(currentSpeed, SPRINT_SPEED, delta * lerpSpeed)
 		head.position.y = lerp(head.position.y, standupCamera, delta*lerpSpeed)
@@ -96,6 +101,7 @@ func _physics_process(delta: float) -> void:
 		isSprinting = true
 		isCrouching = false
 		
+	# Walking logic
 	elif !Input.is_action_pressed("sprint") and !Input.is_action_pressed("crouch") and !rcUpCrouch.is_colliding():
 		head.position.y = lerp(head.position.y, standupCamera, delta*lerpSpeed)
 		csStandup.disabled = false
@@ -106,7 +112,6 @@ func _physics_process(delta: float) -> void:
 		isWalking = true
 		isSprinting = false
 		isCrouching = false
-		
 		
 	# Slide logic end
 	if isSliding and timerSlide.is_stopped():
@@ -136,8 +141,12 @@ func _physics_process(delta: float) -> void:
 		eyes.position.y = lerp(eyes.position.y, 0.0, delta*lerpSpeed)
 		eyes.position.x = lerp(eyes.position.x, 0.0, delta*lerpSpeed)
 		
-	
-	# Direction logic
+	# Lean logic
+	var leanDirection = float(Input.is_action_pressed("lean_right")) - float(Input.is_action_pressed("lean_left"))
+	neck.position.x = lerp(neck.position.x, 0.5 * leanDirection, delta * lerpSpeed)
+	neck.rotation.z = lerp(neck.rotation.z, deg_to_rad(-22 * leanDirection), lerpSpeed * delta)
+		
+	# Direction movement logic
 	if is_on_floor():
 		direction = lerp(direction,(transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized(), delta * lerpSpeed)
 	else:
