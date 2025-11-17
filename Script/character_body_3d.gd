@@ -1,10 +1,16 @@
 extends CharacterBody3D
 
+# Camera component
 @onready var head : Node3D = $head
 @onready var neck : Node3D = $head/neck
 @onready var eyes: Node3D = $head/neck/eyes
 @onready var camera : Camera3D = $head/neck/eyes/Camera3D
 
+# Raycast component
+@onready var rcUpView: RayCast3D = $head/RC_Up_View
+@onready var rcCenterView: RayCast3D = $head/RC_Center_View
+
+# Usefull Component
 @onready var csStandup : CollisionShape3D = $CS_Standup
 @onready var csCrouch : CollisionShape3D = $CS_Crouch
 @onready var rcUpCrouch: RayCast3D = $RC_UpCrouch
@@ -31,6 +37,7 @@ const MOUSE_SENS : float = 0.2
 @onready var timerSlide: Timer = $Timer_Slide
 var slideVector := Vector2.ZERO
 const SLIDE_SPEED : float = 10.0
+var isSliding : bool = false
 
 # Head bobbing var
 const HEAD_BOBBING_SPRINTING_SPEED : float = 22.0
@@ -45,11 +52,13 @@ var headBobbingVector = Vector2.ZERO
 var headBobbingIndex : float = 0.0
 var headBobbingCurrentIntensity : float = 0.0
 
+# Climb var
+var canClimbing : bool = false
+
 # State 
 var isWalking : bool = false
 var isCrouching : bool = false
 var isSprinting : bool = false
-var isSliding : bool = false
 
 func _physics_process(delta: float) -> void:
 	
@@ -59,9 +68,19 @@ func _physics_process(delta: float) -> void:
 	# Add the gravity.
 	if not is_on_floor():
 		velocity += get_gravity() * delta
+		
+	# Landing Logic
+	if rcCenterView.is_colliding() and !rcUpView.is_colliding():
+		canClimbing = true
+		if Input.is_action_just_pressed("jump"):
+			position += rcUpView.target_position
+			pass
+		print("Tu peut grimper")
+	else:
+		canClimbing = false
 
 	# Handle jump.
-	if Input.is_action_just_pressed("jump") and is_on_floor():
+	if Input.is_action_just_pressed("jump") and is_on_floor() and !canClimbing:
 		animationPlayer.play("jump")
 		velocity.y = JUMP_VELOCITY
 		isSliding = false
