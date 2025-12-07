@@ -73,7 +73,7 @@ func _physics_process(delta: float) -> void:
 	if rcCenterView.is_colliding() and !rcUpView.is_colliding():
 		canClimbing = true
 		if Input.is_action_just_pressed("jump"):
-			position += rcUpView.target_position
+			position = position + rcUpView.target_position #lerp(position, position + rcUpView.target_position, delta * lerpSpeed)
 			pass
 		print("Tu peut grimper")
 	else:

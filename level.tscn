@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://bopp7dfmorl7m"]
 
-[ext_resource type="PackedScene" uid="uid://c7gynwqu2m76k" path="res://Node/src_player.tscn" id="1_u52ul"]
+[ext_resource type="PackedScene" uid="uid://c7gynwqu2m76k" path="res://Node/player.tscn" id="1_u52ul"]
 [ext_resource type="Texture2D" uid="uid://c46p4bp1688k4" path="res://Placeholder/Skybox/hdris/kloofendal_48d_partly_cloudy_puresky_2k.hdr" id="2_vonw3"]
 [ext_resource type="Texture2D" uid="uid://bx5luk3qpxpi8" path="res://Placeholder/Grid/512x512/Gray/Prototype_Grid_Gray_08-512x512.png" id="3_oi3di"]
 

@@ -10,9 +10,14 @@ config_version=5
 
 [application]
 
-config/name="testParkourFPS"
+config/name="FirstPersonneControllerGodot"
+run/main_scene="uid://bopp7dfmorl7m"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
+
+[display]
+
+window/stretch/mode="canvas_items"
 
 [input]
 
