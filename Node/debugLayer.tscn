@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://c4iyqh5etvnd4"]
+
+[ext_resource type="Script" uid="uid://bjce023bbu33s" path="res://Script/debug.gd" id="1_20bkt"]
+
+[node name="debugLayer" type="CanvasLayer"]
+script = ExtResource("1_20bkt")
+
+[node name="Label" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+text = "test"

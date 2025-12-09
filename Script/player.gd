@@ -7,8 +7,8 @@ extends CharacterBody3D
 @onready var camera : Camera3D = $head/neck/eyes/Camera3D
 
 # Raycast component
-@onready var rcUpView: RayCast3D = $head/RC_Up_View
-@onready var rcCenterView: RayCast3D = $head/RC_Center_View
+@onready var rcUpView: RayCast3D = $RC_Up_View
+@onready var rcCenterView: RayCast3D = $RC_Center_View
 
 # Usefull Component
 @onready var csStandup : CollisionShape3D = $CS_Standup
@@ -54,6 +54,7 @@ var headBobbingCurrentIntensity : float = 0.0
 
 # Climb var
 var canClimbing : bool = false
+var isClimbing : bool = false
 
 # State 
 var isWalking : bool = false
@@ -69,15 +70,18 @@ func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 		
-	# Landing Logic
+	# Climb Logic
 	if rcCenterView.is_colliding() and !rcUpView.is_colliding():
 		canClimbing = true
 		if Input.is_action_just_pressed("jump"):
-			position = position + rcUpView.target_position #lerp(position, position + rcUpView.target_position, delta * lerpSpeed)
+			var tempLandingPosition :Vector3 = position + Vector3(rcUpView.target_position.x, rcUpView.target_position.y + 2.7, rcUpView.target_position.z)
+			_climb_animation(tempLandingPosition)
 			pass
-		print("Tu peut grimper")
+		DebugLayer.debugText = str("Tu peut grimper")
+		#print("Tu peut grimper")
 	else:
 		canClimbing = false
+		DebugLayer.debugText = str("Tu peut PAS grimper")
 
 	# Handle jump.
 	if Input.is_action_just_pressed("jump") and is_on_floor() and !canClimbing:
@@ -86,19 +90,18 @@ func _physics_process(delta: float) -> void:
 		isSliding = false
 		
 	if velocity.y < -4:
-		print(velocity.y)
 		animationPlayer.play("landing")
 		
 		# States logic
 	# Crouch logic
-	if Input.is_action_pressed("crouch"):
+	if Input.is_action_pressed("crouch") and is_on_floor():
 		currentSpeed = lerp(currentSpeed, CROUCH_SPEED, delta * lerpSpeed)
 		head.position.y = lerp(head.position.y, crouchCamera, delta*lerpSpeed)
 		csStandup.disabled = true
 		csCrouch.disabled = false
 		
 		# Slide begin logic
-		if isSprinting and input_dir != Vector2.ZERO:
+		if isSprinting and input_dir != Vector2.ZERO and is_on_floor():
 			isSliding = true
 			timerSlide.start()
 			slideVector = input_dir
@@ -106,7 +109,7 @@ func _physics_process(delta: float) -> void:
 			pass
 		
 		isWalking = false
-		isSprinting = false
+		if is_on_floor(): isSprinting = false
 		isCrouching = true
 	
 	# Sprint logic begin
@@ -121,7 +124,7 @@ func _physics_process(delta: float) -> void:
 		isCrouching = false
 		
 	# Walking logic
-	elif !Input.is_action_pressed("sprint") and !Input.is_action_pressed("crouch") and !rcUpCrouch.is_colliding():
+	elif !Input.is_action_pressed("sprint") and !Input.is_action_pressed("crouch") and !rcUpCrouch.is_colliding() and is_on_floor():
 		head.position.y = lerp(head.position.y, standupCamera, delta*lerpSpeed)
 		csStandup.disabled = false
 		csCrouch.disabled = true
@@ -202,4 +205,22 @@ func _input(event: InputEvent) -> void:
 
 			pass
 		pass
+	pass
+
+func _climb_animation(placeToClimb : Vector3) -> void:
+	isClimbing = true
+	
+	var verticalClimb := Vector3(global_transform.origin.x, placeToClimb.y, global_transform.origin.z)
+	var verticalTween : Tween = get_tree().create_tween().set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_IN)
+	verticalTween.tween_property(self, "global_transform:origin", verticalClimb, 0.4)
+	
+	await verticalTween.finished
+	
+	var forwardClimb : Vector3 = global_transform.origin + (-self.basis.z * 1.2)
+	var forwardTween : Tween = get_tree().create_tween().set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_IN_OUT)
+	forwardTween.tween_property(self, "global_transform:origin", forwardClimb, 0.3)
+	
+	await forwardTween.finished
+	
+	isClimbing = false
 	pass

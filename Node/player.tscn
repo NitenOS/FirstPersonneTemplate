@@ -1,7 +1,6 @@
-[gd_scene load_steps=9 format=3 uid="uid://c7gynwqu2m76k"]
+[gd_scene load_steps=8 format=3 uid="uid://c7gynwqu2m76k"]
 
 [ext_resource type="Script" uid="uid://ds2rd6386oum4" path="res://Script/player.gd" id="1_q6ses"]
-[ext_resource type="PackedScene" uid="uid://c4iyqh5etvnd4" path="res://Node/fps_counter.tscn" id="2_a8a1h"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_q6ses"]
 height = 1.8
@@ -126,16 +125,16 @@ libraries = {
 &"": SubResource("AnimationLibrary_pdrn0")
 }
 
-[node name="RC_Center_View" type="RayCast3D" parent="head"]
-target_position = Vector3(0, 0, -1)
-
-[node name="RC_Up_View" type="RayCast3D" parent="head"]
-target_position = Vector3(0, 1.5, -1)
-
 [node name="RC_UpCrouch" type="RayCast3D" parent="."]
 target_position = Vector3(0, 2, 0)
 
 [node name="Timer_Slide" type="Timer" parent="."]
 one_shot = true
 
-[node name="fpsCounter" parent="." instance=ExtResource("2_a8a1h")]
+[node name="RC_Center_View" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+target_position = Vector3(0, 0, -1)
+
+[node name="RC_Up_View" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, 0)
+target_position = Vector3(0, 0, -1)
