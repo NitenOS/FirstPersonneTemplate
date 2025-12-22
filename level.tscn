@@ -1,8 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://bopp7dfmorl7m"]
+[gd_scene load_steps=10 format=3 uid="uid://bopp7dfmorl7m"]
 
 [ext_resource type="PackedScene" uid="uid://c7gynwqu2m76k" path="res://Node/player.tscn" id="1_u52ul"]
 [ext_resource type="Texture2D" uid="uid://c46p4bp1688k4" path="res://Placeholder/Skybox/hdris/kloofendal_48d_partly_cloudy_puresky_2k.hdr" id="2_vonw3"]
 [ext_resource type="Texture2D" uid="uid://bx5luk3qpxpi8" path="res://Placeholder/Grid/512x512/Gray/Prototype_Grid_Gray_08-512x512.png" id="3_oi3di"]
+[ext_resource type="PackedScene" uid="uid://bak8ltrhbmlv5" path="res://Node/CSGStairMaker3D.tscn" id="4_0b4ue"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_oi3di"]
 panorama = ExtResource("2_vonw3")
@@ -129,3 +130,26 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -8.7
 use_collision = true
 size = Vector3(1, 17, 3.5)
 material = SubResource("StandardMaterial3D_oi3di")
+
+[node name="CSGStairMaker3D" parent="Stage" instance=ExtResource("4_0b4ue")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1, 4.004964, -20.9166)
+use_collision = true
+size = Vector3(3, 2, 3)
+
+[node name="CSGStairMaker3D2" parent="Stage" instance=ExtResource("4_0b4ue")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -2, 4.004964, -20.9166)
+use_collision = true
+size = Vector3(3, 2, 3)
+num_stairs = 5
+
+[node name="CSGStairMaker3D3" parent="Stage" instance=ExtResource("4_0b4ue")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5, 4.004964, -20.9166)
+use_collision = true
+size = Vector3(3, 2, 3)
+num_stairs = 11
+
+[node name="CSGStairMaker3D4" parent="Stage" instance=ExtResource("4_0b4ue")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5, 1.7447205, -1.5)
+use_collision = true
+size = Vector3(3, 2.5, 3)
+num_stairs = 11

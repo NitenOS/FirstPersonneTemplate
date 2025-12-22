@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://c7gynwqu2m76k"]
+[gd_scene load_steps=10 format=3 uid="uid://c7gynwqu2m76k"]
 
 [ext_resource type="Script" uid="uid://ds2rd6386oum4" path="res://Script/player.gd" id="1_q6ses"]
 
@@ -98,7 +98,13 @@ _data = {
 &"landing": SubResource("Animation_pdrn0")
 }
 
+[sub_resource type="SeparationRayShape3D" id="SeparationRayShape3D_0rnl3"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_0rnl3"]
+height = 0.1
+
 [node name="CharacterBody3D" type="CharacterBody3D"]
+floor_snap_length = 0.0
 script = ExtResource("1_q6ses")
 
 [node name="CS_Standup" type="CollisionShape3D" parent="."]
@@ -138,3 +144,19 @@ target_position = Vector3(0, 0, -1)
 [node name="RC_Up_View" type="RayCast3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, 0)
 target_position = Vector3(0, 0, -1)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0.1780231, 1.0858505, -0.719074)
+shape = SubResource("SeparationRayShape3D_0rnl3")
+disabled = true
+
+[node name="SC_Stairs" type="ShapeCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
+shape = SubResource("CylinderShape3D_0rnl3")
+
+[node name="RC_Stairs_Ahead" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5519589, -0.75360924)
+target_position = Vector3(0, -0.55, 0)
+
+[node name="RC_Stairs_Below" type="RayCast3D" parent="."]
+target_position = Vector3(0, -0.75, 0)

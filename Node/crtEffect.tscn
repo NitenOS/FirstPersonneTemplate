@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://15ia4slaxyry"]
+
+[ext_resource type="Shader" uid="uid://dmx3v4jixnpp1" path="res://Shader/shaderCrtEffect.gdshader" id="1_b6tsf"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_k7117"]
+shader = ExtResource("1_b6tsf")
+shader_parameter/scanline_color = Color(0, 0, 0, 1)
+shader_parameter/flicker_color = Color(0, 0, 0, 1)
+shader_parameter/scanlines_count = 10.0
+shader_parameter/scanlines_intensity = 0.05
+shader_parameter/flicker_speed = 30.0
+shader_parameter/flicker_intensity = 0.025
+shader_parameter/color_offset = 1.5
+shader_parameter/blur = 0.15
+
+[node name="CanvasLayer" type="CanvasLayer"]
+
+[node name="ColorRect" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_k7117")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
