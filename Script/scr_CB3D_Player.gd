@@ -66,7 +66,6 @@ var headBobbingCurrentIntensity : float = 0.0
 
 # Climb var
 var canClimbing : bool = false
-#var isClimbing : bool = false
 
 # State 
 var isWalking : bool = false
@@ -180,40 +179,14 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.x = move_toward(velocity.x, 0, currentSpeed)
 		velocity.z = move_toward(velocity.z, 0, currentSpeed)
-
-	# Stairs logic v1
-	#scStairs.global_position.x = global_position.x + velocity.x * delta
-	#scStairs.global_position.z = global_position.z + velocity.z * delta
-	#
-	#if is_on_ground():
-		#scStairs.target_position.y = -1
-	#else:
-		#scStairs.target_position.y = -0.45
-		#
-	#var query = PhysicsShapeQueryParameters3D.new()
-	#query.exclude = [self]
-	#query.shape = scStairs.shape
-	#query.transform = scStairs.global_transform
-	#var result = get_world_3d().direct_space_state.intersect_shape(query, 1)
-	#if !result:
-		#scStairs.force_shapecast_update()
-	#DebugLayer.debugText = str(bool(!result)) + str("\r")
-	#
-	#if scStairs.is_colliding() and velocity.y <= 0.0 and !result:
-		#global_position.y = scStairs.get_collision_point(0).y
-		#velocity.y = 0.0
-		#isGrounded = true
-	#else:
-		#isGrounded = false
-	
+		
 	#Debug zone
 	DebugLayer.debugText += str("\r Current Speed : ") + str(currentSpeed)
+	DebugLayer.debugText += str("\r Current Velocity : ") + str(velocity)
 		
-	# Stairs logic v2
+	# Stairs logic 
 	if is_on_floor(): lastFrameWasOnFloor = Engine.get_physics_frames()
-	#if not _snap_up_stairs_check(delta):
-		#move_and_slide()
-		#_snap_down_to_stairs_check()
+	
 	_snap_up_stairs_check(delta)
 	move_and_slide()
 	_snap_down_to_stairs_check()
@@ -236,11 +209,6 @@ func _input(event: InputEvent) -> void:
 			pass
 		pass
 	pass
-
-# Réecriture de la fonction "is_on_floor()" pour pouvoir définir manuellement quand le personnage est au sol
-#Actuellement useless (à enlevé)
-func is_on_ground() -> bool:
-	return isGrounded or is_on_floor()
 	
 ## Check si l'angle du sol est plus grand ou non que la limite fixé par le CharacterBody3D (fixé par "floor_max_angle"). [br]
 ## Renvoie [code]true[/code] si elle est plus petite (et que l'on peut donc s'y déplacé) et inversement.
