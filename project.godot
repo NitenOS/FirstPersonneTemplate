@@ -13,11 +13,12 @@ config_version=5
 config/name="FirstPersonneControllerGodot"
 run/main_scene="uid://bopp7dfmorl7m"
 config/features=PackedStringArray("4.5", "Forward Plus")
+boot_splash/image="uid://bpxmarkkjx5nb"
 config/icon="res://icon.svg"
 
 [autoload]
 
-DebugLayer="*res://Node/debugLayer.tscn"
+DebugLayer="*res://Node/clDebug.tscn"
 CrtEffect="*res://Node/crtEffect.tscn"
 
 [display]
