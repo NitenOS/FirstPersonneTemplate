@@ -1,9 +1,9 @@
 [gd_scene load_steps=2 format=3 uid="uid://c4iyqh5etvnd4"]
 
-[ext_resource type="Script" uid="uid://bjce023bbu33s" path="res://Script/debug.gd" id="1_20bkt"]
+[ext_resource type="Script" uid="uid://bjce023bbu33s" path="res://Script/scr_CL_Debug.gd" id="1_77ilc"]
 
 [node name="debugLayer" type="CanvasLayer"]
-script = ExtResource("1_20bkt")
+script = ExtResource("1_77ilc")
 
 [node name="Label" type="Label" parent="."]
 offset_right = 40.0
