@@ -1,9 +1,10 @@
-[gd_scene load_steps=10 format=3 uid="uid://bopp7dfmorl7m"]
+[gd_scene load_steps=11 format=3 uid="uid://bopp7dfmorl7m"]
 
 [ext_resource type="PackedScene" uid="uid://c7gynwqu2m76k" path="res://Node/cb3dPlayer.tscn" id="1_u52ul"]
 [ext_resource type="Texture2D" uid="uid://c46p4bp1688k4" path="res://Placeholder/Skybox/hdris/kloofendal_48d_partly_cloudy_puresky_2k.hdr" id="2_vonw3"]
 [ext_resource type="Texture2D" uid="uid://bx5luk3qpxpi8" path="res://Placeholder/Grid/512x512/Gray/Prototype_Grid_Gray_08-512x512.png" id="3_oi3di"]
 [ext_resource type="PackedScene" uid="uid://bak8ltrhbmlv5" path="res://Node/csgStairMaker3D.tscn" id="4_0b4ue"]
+[ext_resource type="AudioStream" uid="uid://dckocve3gxiug" path="res://Audio/Music/lofi-sample-if-i-cant-have-you.mp3" id="5_f2txt"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_oi3di"]
 panorama = ExtResource("2_vonw3")
@@ -153,3 +154,8 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5, 
 use_collision = true
 size = Vector3(3, 2.5, 3)
 num_stairs = 11
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_f2txt")
+autoplay = true
+bus = &"Music"

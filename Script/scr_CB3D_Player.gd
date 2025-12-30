@@ -10,6 +10,12 @@ extends CharacterBody3D
 @onready var rcUpView: RayCast3D = $RC_Up_View
 @onready var rcCenterView: RayCast3D = $RC_Center_View
 
+# Audio component
+@onready var asp3dFootstep: AudioStreamPlayer3D = $ASP3D_Footstep
+@export var footsteps : Array[AudioStream]
+var canStep : bool = true
+var lastStepPlay : int = 0
+
 # Usefull Component
 @onready var csStandup : CollisionShape3D = $CS_Standup
 @onready var csCrouch : CollisionShape3D = $CS_Crouch
@@ -24,7 +30,6 @@ extends CharacterBody3D
 var isGrounded : bool = false
 
 # Stairs moving component
-@onready var scStairs: ShapeCast3D = $SC_Stairs
 @onready var rcStairsAhead: RayCast3D = $RC_Stairs_Ahead
 @onready var rcStairsBelow: RayCast3D = $RC_Stairs_Below
 const MAX_STEP_HEIGHT = 0.5
@@ -90,10 +95,10 @@ func _physics_process(delta: float) -> void:
 			var tempClimbPosition : Vector3 = position + Vector3(rcUpView.target_position.x, rcUpView.target_position.y + 2.7, rcUpView.target_position.z)
 			_climb_animation(tempClimbPosition)
 			pass
-		DebugLayer.debugText = str("Tu peut grimper")
+		DebugLayer.debugText = str("Tu peux grimper")
 	else:
 		canClimbing = false
-		DebugLayer.debugText = str("Tu peut PAS grimper")
+		DebugLayer.debugText = str("Tu peux PAS grimper")
 
 	# Handle jump.
 	if Input.is_action_just_pressed("jump") and is_on_floor() and !canClimbing:
@@ -312,7 +317,22 @@ func _headBobb(input_dir, delta) -> void:
 		eyes.position.y = lerp(eyes.position.y, headBobbingVector.y * (headBobbingCurrentIntensity/2.0), delta*lerpSpeed)
 		eyes.position.x = lerp(eyes.position.x, headBobbingVector.x * headBobbingCurrentIntensity, delta*lerpSpeed)
 		
+		
+		if headBobbingVector.y <= -0.9 and canStep: 
+			var tempRand = randi() % (footsteps.size()-1)
+			if lastStepPlay == tempRand:
+				if tempRand == footsteps.size()-1 : tempRand -= 1
+				else: tempRand += 1
+			lastStepPlay = tempRand
+			asp3dFootstep.stream = footsteps[lastStepPlay]
+			asp3dFootstep.play()
+			print(lastStepPlay)
+			canStep = false
+		elif headBobbingVector.y > -0.9:
+			canStep = true
 	else:
 		eyes.position.y = lerp(eyes.position.y, 0.0, delta*lerpSpeed)
 		eyes.position.x = lerp(eyes.position.x, 0.0, delta*lerpSpeed)
+		#asp3dFootstep.stop()
+		canStep = true
 	pass
